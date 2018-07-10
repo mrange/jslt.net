@@ -7,8 +7,8 @@
     <ProjectGuid>{EA27D980-B298-4832-868C-79C8032EF25E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>jslt.net</RootNamespace>
-    <AssemblyName>jslt.net</AssemblyName>
+    <RootNamespace>Jslt.Net</RootNamespace>
+    <AssemblyName>Jslt.Net</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

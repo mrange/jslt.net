@@ -1,4 +1,4 @@
-﻿namespace jslt.net.ast.AssemblyInfo
+﻿namespace Jslt.Net.AST.AssemblyInfo
 
 open System.Reflection
 open System.Runtime.CompilerServices

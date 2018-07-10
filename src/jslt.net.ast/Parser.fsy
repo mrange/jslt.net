@@ -1,0 +1,84 @@
+﻿%{
+#nowarn "0058"
+open Jslt.Net.AST.Core
+%}
+
+%start start
+
+%token NULL
+//%token <int> INTEGER
+%token <float> FLOAT
+%token <string> STRING
+%token LBRACKET
+%token RBRACKET
+%token COMMA
+%token COLON
+%token LCURLY
+%token RCURLY
+%token TRUE
+%token FALSE
+%token OR
+%token AND
+%token DOT
+%token EOF
+%token IF
+%token ELSE
+%token LPAREN
+%token RPAREN
+%token LET
+%token ASSIGN
+%token EQUALS
+%token UNEQUALS
+%token BIGOREQ
+%token BIGGER
+%token SMALLER
+%token SMALLOREQ
+%token PLUS
+%token MINUS
+%token STAR
+%token SLASH
+%token FOR
+%token DEF
+%token IMPORT
+%token AS
+%token <string> IDENT
+%token <string> PIDENT
+%token <string> VARIABLE
+
+%type <Core.Ast option> start
+
+%%
+
+// TODO: Add JSLT
+// TODO: Error recovery
+//  Look at VisualFsharp
+
+start: prog { $1 }
+
+prog:
+  | EOF { None }
+  | value { Some $1 }
+
+value:
+  | LCURLY object_fields RCURLY { Object $2 }
+  | LBRACKET array_values RBRACKET { Array $2 }
+  | STRING { String $1 }
+  | FLOAT { Number $1 }
+  | TRUE { Boolean true }
+  | FALSE { Boolean false }
+  | NULL { Null }
+
+object_fields: rev_object_fields { List.rev $1 };
+
+rev_object_fields:
+  | { [] }
+  | STRING COLON value { [($1,$3)] }
+  | rev_object_fields COMMA STRING COLON value { ($3, $5) :: $1 }
+
+array_values:
+  | { [] }
+  | rev_values { List.rev $1 }
+
+rev_values:
+  | value { [$1] }
+  | rev_values COMMA value { $3 :: $1 }

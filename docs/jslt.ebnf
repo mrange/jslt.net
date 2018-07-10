@@ -1,0 +1,95 @@
+
+NULL      ::= "null"
+INTEGER   ::= ("-")? (["0"-"9"])+
+DECIMAL   ::= ("-")? ("0" | ["1"-"9"] ["0"-"9"]*) ("." (["0"-"9"]+))? (("e"|"E") ("+"|"-")? (["0"-"9"])+)?
+STRING    ::= "\"" ((~["\""]) | ("\\" "\""))* "\""
+LBRACKET  ::= "["
+RBRACKET  ::= "]"
+COMMA     ::= ","
+COLON     ::= ":"
+LCURLY    ::= "{"
+RCURLY    ::= "}"
+TRUE      ::= "true"
+FALSE     ::= "false"
+OR        ::= "or"
+AND       ::= "and"
+DOT       ::= "."
+EOF       ::= END_OF_STREAM
+IF        ::= "if"
+ELSE      ::= "else"
+LPAREN    ::= "("
+RPAREN    ::= ")"
+LET       ::= "let"
+ASSIGN    ::= "="
+EQUALS    ::= "=="
+UNEQUALS  ::= "!="
+BIGOREQ   ::= ">="
+BIGGER    ::= ">"
+SMALLER   ::= "<"
+SMALLOREQ ::= "<="
+PLUS      ::= "+"
+MINUS     ::= "-"
+STAR      ::= "*"
+SLASH     ::= "/"
+FOR       ::= "for"
+DEF       ::= "def"
+IMPORT    ::= "import"
+AS        ::= "as"
+IDENT     ::= (["A"-"Z"] | ["a"-"z"] | ["0"-"9"] | "_" | "-")+
+PIDENT    ::= (["A"-"Z"] | ["a"-"z"] | ["0"-"9"] | "_" | "-")+
+              :
+              (["A"-"Z"] | ["a"-"z"] | ["0"-"9"] | "_" | "-")+
+VARIABLE  ::= "$" (["A"-"Z"] | ["a"-"z"] | ["0"-"9"] | "_" | "-")+
+
+Start                   ::= Import*
+                            (Let | FunctionDecl)* 
+                            Expr EOF
+Module                  ::= Import*
+                            (Let | FunctionDecl)* 
+                            Expr? EOF
+Expr                    ::= AndExpr (OR Expr)?
+AndExpr                 ::= ComparativeExpr (AND AndExpr)?
+ComparativeExpr         ::= AdditiveExpr (Comparator AdditiveExpr)?
+Comparator              ::= EQUALS | UNEQUALS | BIGOREQ | BIGGER | SMALLER | SMALLOREQ
+AdditiveExpr            ::= MultiplicativeExpr (AdditiveOperator AdditiveExpr)?
+AdditiveOperator        ::= PLUS> | MINUS
+MultiplicativeExpr      ::= BaseExpr (MultiplicativeOperator MultiplicativeExpr)
+MultiplicativeOperator  ::= STAR | SLASH
+BaseExpr                ::= NULL | INTEGER | DECIMAL | STRING | TRUE | FALSE |
+                            Chainable | Parenthesis | IfStatement | Array |
+                            Object | ObjectComprehension
+Chainable               ::= (FunctionCall | VARIABLE | DOT (IDENT | STRING)?)
+                            ChainLink?
+ChainLink               ::= (DotKey | ArraySlicing)
+                            ChainLink*
+Parenthesis             ::= LPAREN Expr RPAREN
+DotKey                  ::= DOT (IDENT | STRING)
+ArraySlicing            ::= LBRACKET (Expr (COLON Expr?)?| COLON Expr) RBRACKET
+Array                   ::= LBRACKET (FOR LPAREN Expr RBRACKET Expr | (Expr (COMMA Expr)*)?
+Object                  ::= LCURLY
+                              Let*
+                              (Pair | Matcher)?
+                            RCURLY
+Matcher                 ::= STAR MatcherMinus? COLON Expr
+MatcherMinus            ::= MINUS (IDENT | STRING) (COMMA (IDENT | STRING))*
+Pair                    ::= STRING COLON Expr
+                            (COMMA (Pair | Matcher))?
+ObjectComprehension     ::= LCURLY
+                              FOR LPAREN Expr RPAREN
+                                Let*
+                                Expr COLON Expr
+                            RCURLY
+IfStatement             ::= IF LPAREN Expr RPAREN
+                              Let*
+                              Expr
+                              ElseBranch?
+ElseBranch              ::= ELSE
+                              Let*
+                              Expr
+FunctionCall            ::= IDENT LPAREN (Expr (COMMA Expr)*)? RPAREN
+Let                     ::= LET IDENT ASSIGN Expr
+Let                     ::= LET IDENT ASSIGN Expr (NEW_LINE | IN) Expr
+FunctionDecl            ::= DEF IDENT LPAREN (IDENT (COMMA IDENT)*)? RPAREN
+                            Let*
+                            Expr
+Import                  ::= IMPORT STRING AS IDENT
